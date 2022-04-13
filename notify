@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+command -v notify-send 2>&1 >/dev/null
+result="$?"
+
+if [ "$result" -ne 0 ]; then
+  echo "notify-send not available" 1>&2
+  exit 1
+fi
+
+$@
+result=$?
+time=$(date "+%H:%M:%S")
+
+str="[$time] "
+cat=""
+if [ "$result" -eq 0 ]; then
+  str+="SUCCESS: "
+  cat="normal"
+else
+  str+="FAILURE: "
+  cat="critical"
+fi
+
+str+="$@"
+notify-send -u "$cat" "$str" -t 0
+
+exit "$result"
